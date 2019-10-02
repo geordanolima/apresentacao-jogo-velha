@@ -1,0 +1,190 @@
+<template>
+    <div class="row col">
+        <q-page class="col-3">
+            <q-input
+                v-model="jogador1"
+                class="jogador col paddin-top-100"
+                color="white"
+                align="right"
+                dark
+                clearable
+            />
+        </q-page>
+        <q-page class="container justify-center items-center col paddin-top-100">
+            <div>
+                <div class="flex flex-center col-md-10">
+                    <q-btn
+                        class="reset"
+                        @click="reiniciar"
+                        icon="refresh"
+                        color="accent"
+                        round
+                    >
+                        <q-tooltip>
+                            <p style="font-size:15pt">
+                                Reiniciar a partida
+                            </p>
+                        </q-tooltip>
+                    </q-btn>
+                </div>
+                <div class="flex flex-center col-md-10 jogador">
+                    <span> JOGADOR {{ vezDe == 'X' ? jogador1 : jogador2 }}
+                        <h1 v-show="alguemGanhou">GANHOU</h1>
+                    </span>
+                </div>
+
+            </div>
+            <q-page class="flex flex-center col-md-10">
+                <div>
+                    <jv-board
+                        v-model="posicoes"
+                        @jogar="jogarPartida"
+                    />
+                </div>
+            </q-page>
+        </q-page>
+        <q-page class="col-3">
+            <q-input
+                v-model="jogador2"
+                class="jogador col paddin-top-100"
+                color="white"
+                align="right"
+                dark
+                clearable
+            />
+        </q-page>
+    </div>
+</template>
+
+<script>
+import jvBoard from '../components/jvBoard'
+export default {
+  name: 'xxx',
+
+  components: { jvBoard },
+
+  data () {
+    return {
+      vezDe: 'X',
+      alguemGanhou: false,
+      posicoes: {
+        A1: {
+          exibir: null,
+          ganhou: false
+        },
+        A2: {
+          exibir: null,
+          ganhou: false
+        },
+        A3: {
+          exibir: null,
+          ganhou: false
+        },
+        B1: {
+          exibir: null,
+          ganhou: false
+        },
+        B2: {
+          exibir: null,
+          ganhou: false
+        },
+        B3: {
+          exibir: null,
+          ganhou: false
+        },
+        C1: {
+          exibir: null,
+          ganhou: false
+        },
+        C2: {
+          exibir: null,
+          ganhou: false
+        },
+        C3: {
+          exibir: null,
+          ganhou: false
+        }
+      },
+      jogador1: 'jogador1',
+      jogador2: 'jogador2'
+    }
+  },
+  computed: {
+    jogada () {
+      const getExibir = i => i.exibir
+      const getValues = value => Object.values(value).map(getExibir)
+      return getValues(this.posicoes)
+    }
+  },
+  methods: {
+    jogarPartida (jogada) {
+      let vezDeJogar = this.vezDe
+      let ninguemGanhou = !this.alguemGanhou
+      if (ninguemGanhou) {
+        jogada.exibir = vezDeJogar
+        let x = this.validaGanhador(this.jogada)
+        console.log(x)
+        if (ninguemGanhou) {
+          this.vezDe = vezDeJogar === 'X' ? 'O' : 'X'
+        }
+      }
+    },
+    validaGanhador (lista) {
+      let valida = this.vezDe
+      if (((lista[0] === valida && lista[1] === valida && lista[2] === valida) || (lista[3] === valida && lista[4] === valida && lista[5] === valida) || (lista[6] === valida && lista[7] === valida && lista[8] === valida)) ||
+                ((lista[0] === valida && lista[3] === valida && lista[6] === valida) || (lista[1] === valida && lista[4] === valida && lista[7] === valida) || (lista[2] === valida && lista[5] === valida && lista[8] === valida)) ||
+                ((lista[0] === valida && lista[4] === valida && lista[8] === valida) || (lista[2] === valida && lista[4] === valida && lista[6] === valida))) {
+        // alert((this.vezDe === 'X' ? this.jogador1 : this.jogador2) + ' Ganhou')
+        this.$q.dialog({
+          title: 'Parabéns',
+          message: `${this.vezDe === 'X' ? this.jogador1 : this.jogador2}, você venceu esta partida!`,
+          ok: 'Jogar novamente',
+          cancel: 'Ranking'
+        })
+          .then(() => {
+            console.log('aqui')
+            this.reiniciar()
+          })
+          .catch(() => {
+            this.$route.push('/ranking')
+          })
+      }
+    },
+    reiniciar () {
+      console.log('aqui2')
+      for (const item in this.posicoes) {
+        let posicao = this.posicoes[item]
+        posicao.exibir = null
+        posicao.ganhou = false
+      }
+      this.vezDe = 'X'
+      this.alguemGanhou = false
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.reset{
+    margin: 3%;
+}
+.jogador {
+    color: #fff !important;
+    font-size: 35pt;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+.paddin-top-100{
+    padding-top: 100px;
+}
+.q-field__native{
+    color: #fff !important;
+    text-align: center;
+}
+.q-field__marginal{
+    color: #fff !important;
+}
+.flex-center{
+    min-height: 0px !important;
+}
+</style>
