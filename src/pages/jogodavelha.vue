@@ -1,6 +1,6 @@
 <template>
     <div class="row col">
-        <q-page class="col-3">
+        <q-page class="col-3 justify-center">
             <q-input
                 v-model="jogador1"
                 class="jogador col paddin-top-100"
@@ -8,9 +8,11 @@
                 align="right"
                 dark
                 clearable
+                @keydown.enter="$_cadastrarUsuario"
             />
+            <p class="pSimbolo">X</p>
         </q-page>
-        <q-page class="container justify-center items-center col paddin-top-100">
+        <q-page class="container justify-center items-center col">
             <div>
                 <div class="flex flex-center col-md-10">
                     <q-btn
@@ -58,8 +60,9 @@
 
 <script>
 import jvBoard from '../components/jvBoard'
+import axios from 'axios'
 export default {
-  name: 'xxx',
+  name: 'jogovelha',
 
   components: { jvBoard },
 
@@ -117,13 +120,23 @@ export default {
     }
   },
   methods: {
+    $_cadastrarUsuario (value) {
+      axios.post(
+        '/usuarios/', {
+          baseURL: '127.0.0.1:8000',
+          body: {
+            'nome': value
+          }
+        })
+        .then(response => {
+          console.log(response.data)
+        })
+    },
     jogarPartida (jogada) {
       let vezDeJogar = this.vezDe
       let ninguemGanhou = !this.alguemGanhou
       if (ninguemGanhou) {
         jogada.exibir = vezDeJogar
-        let x = this.validaGanhador(this.jogada)
-        console.log(x)
         if (ninguemGanhou) {
           this.vezDe = vezDeJogar === 'X' ? 'O' : 'X'
         }
@@ -134,7 +147,6 @@ export default {
       if (((lista[0] === valida && lista[1] === valida && lista[2] === valida) || (lista[3] === valida && lista[4] === valida && lista[5] === valida) || (lista[6] === valida && lista[7] === valida && lista[8] === valida)) ||
                 ((lista[0] === valida && lista[3] === valida && lista[6] === valida) || (lista[1] === valida && lista[4] === valida && lista[7] === valida) || (lista[2] === valida && lista[5] === valida && lista[8] === valida)) ||
                 ((lista[0] === valida && lista[4] === valida && lista[8] === valida) || (lista[2] === valida && lista[4] === valida && lista[6] === valida))) {
-        // alert((this.vezDe === 'X' ? this.jogador1 : this.jogador2) + ' Ganhou')
         this.$q.dialog({
           title: 'Parabéns',
           message: `${this.vezDe === 'X' ? this.jogador1 : this.jogador2}, você venceu esta partida!`,
@@ -151,7 +163,6 @@ export default {
       }
     },
     reiniciar () {
-      console.log('aqui2')
       for (const item in this.posicoes) {
         let posicao = this.posicoes[item]
         posicao.exibir = null
@@ -175,7 +186,7 @@ export default {
         "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 .paddin-top-100{
-    padding-top: 100px;
+    padding-top: 250px;
 }
 .q-field__native{
     color: #fff !important;
@@ -186,5 +197,10 @@ export default {
 }
 .flex-center{
     min-height: 0px !important;
+}
+.pSimbolo{
+    color: #fff;
+    font-size: 45pt;
+    text-align: center;
 }
 </style>
