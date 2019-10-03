@@ -8,7 +8,7 @@
                 align="right"
                 dark
                 clearable
-                @keydown.enter="$_cadastrarUsuario"
+                @keydown.enter="$_cadastraJogador1"
             />
             <p class="pSimbolo">X</p>
         </q-page>
@@ -53,6 +53,7 @@
                 align="right"
                 dark
                 clearable
+                @keydown.enter="$_cadastraJogador2"
             />
         </q-page>
     </div>
@@ -60,6 +61,7 @@
 
 <script>
 import jvBoard from '../components/jvBoard'
+import { Notify } from 'quasar'
 import axios from 'axios'
 export default {
   name: 'jogovelha',
@@ -120,13 +122,18 @@ export default {
     }
   },
   methods: {
-    $_cadastrarUsuario (value) {
+    $_cadastraJogador1 () {
+      this.$_cadastrarJogador(this.jogador1)
+    },
+    $_cadastraJogador2 () {
+      this.$_cadastrarJogador(this.jogador2)
+    },
+    $_cadastrarJogador (value) {
       axios.post(
         '/usuarios/', {
-          baseURL: '127.0.0.1:8000',
-          body: {
-            'nome': value
-          }
+          'nome': value
+        }, {
+          baseURL: 'http://127.0.0.1:8000'
         })
         .then(response => {
           console.log(response.data)
@@ -137,6 +144,7 @@ export default {
       let ninguemGanhou = !this.alguemGanhou
       if (ninguemGanhou) {
         jogada.exibir = vezDeJogar
+        this.validaGanhador(this.jogada)
         if (ninguemGanhou) {
           this.vezDe = vezDeJogar === 'X' ? 'O' : 'X'
         }
@@ -147,19 +155,18 @@ export default {
       if (((lista[0] === valida && lista[1] === valida && lista[2] === valida) || (lista[3] === valida && lista[4] === valida && lista[5] === valida) || (lista[6] === valida && lista[7] === valida && lista[8] === valida)) ||
                 ((lista[0] === valida && lista[3] === valida && lista[6] === valida) || (lista[1] === valida && lista[4] === valida && lista[7] === valida) || (lista[2] === valida && lista[5] === valida && lista[8] === valida)) ||
                 ((lista[0] === valida && lista[4] === valida && lista[8] === valida) || (lista[2] === valida && lista[4] === valida && lista[6] === valida))) {
-        this.$q.dialog({
-          title: 'Parabéns',
-          message: `${this.vezDe === 'X' ? this.jogador1 : this.jogador2}, você venceu esta partida!`,
-          ok: 'Jogar novamente',
-          cancel: 'Ranking'
+        Notify.create({
+          message: `Parabéns, ${this.vezDe === 'X' ? this.jogador1 : this.jogador2}, você venceu esta partida!`,
+          closeBtn: 'fechar',
+          position: 'center',
+          type: 'positive',
+          textColor: 'black',
+          color: 'white',
+          timeout: 3000
         })
-          .then(() => {
-            console.log('aqui')
-            this.reiniciar()
-          })
-          .catch(() => {
-            this.$route.push('/ranking')
-          })
+        setTimeout(() => {
+          this.reiniciar()
+        }, 3000)
       }
     },
     reiniciar () {

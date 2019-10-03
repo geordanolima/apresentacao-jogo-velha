@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'historico',
 
@@ -22,18 +23,32 @@ export default {
           required: true,
           label: 'Nome do jogador',
           align: 'left',
-          field: 'nome',
-          sortable: true
+          field: 'usuario',
+          sortable: true,
+          format (value) {
+            return value ? value.nome : ''
+          }
         },
         {
           name: 'vitorias',
           required: true,
           label: 'Quantidade de vitórias',
-          field: 'nome',
+          field: 'qtd_vitorias',
           sortable: true
         }
       ]
     }
+  },
+  mounted () {
+    axios.get(
+      '/partidas/ranking/', {
+        baseURL: 'http://127.0.0.1:8000'
+      })
+      .then(response => {
+        if (response.data) {
+          this.tableData = response.data
+        }
+      })
   }
 }
 </script>
