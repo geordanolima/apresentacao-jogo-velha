@@ -1,11 +1,13 @@
 <template>
-  <q-btn
-    class="cell"
-    :class="{ganhou:value.ganhou}"
-    :disabled="value.exibir"
-    @click="jogar"
-    :label="value.exibir"
-  />
+    <div>
+        <q-btn
+            class="cell"
+            :class="{ganhou:value.ganhou}"
+            :disabled="value.exibir"
+            @click="jogar"
+            :label="value.exibir"
+        />
+    </div>
 
 </template>
 
@@ -26,9 +28,9 @@ export default {
   cursor: pointer;
   float: left;
   border: solid 1px rgb(66, 66, 66);
-  width: 140px;
-  height: 140px;
   text-align: center;
+  width: 130px;
+  height: 130px !important;
   line-height: 100px;
   font-size: 60px;
   color: #fee;

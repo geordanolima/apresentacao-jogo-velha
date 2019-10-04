@@ -111,7 +111,10 @@ export default {
         }
       },
       jogador1: 'jogador1',
-      jogador2: 'jogador2'
+      jogador2: 'jogador2',
+      id_jogador1: null,
+      id_jogador2: null,
+      url: 'http://127.0.0.1:8000'
     }
   },
   computed: {
@@ -123,17 +126,29 @@ export default {
   },
   methods: {
     $_cadastraJogador1 () {
-      this.$_cadastrarJogador(this.jogador1)
+      this.id_jogador1 = this.$_cadastrarJogador(this.jogador1)
     },
     $_cadastraJogador2 () {
-      this.$_cadastrarJogador(this.jogador2)
+      this.id_jogador2 = this.$_cadastrarJogador(this.jogador2)
     },
     $_cadastrarJogador (value) {
       axios.post(
         '/usuarios/', {
           'nome': value
         }, {
-          baseURL: 'http://127.0.0.1:8000'
+          baseURL: this.url
+        })
+        .then(response => {
+          return response.data.id
+        })
+    },
+    $_adicionaVencedorPartida (idJogador) {
+      axios.post(
+        `/paartidas/`, {
+          'id_usuario': idJogador,
+          'vencedor': true
+        }, {
+          baseURL: this.url
         })
         .then(response => {
           console.log(response.data)
@@ -164,6 +179,7 @@ export default {
           color: 'white',
           timeout: 3000
         })
+        this.$_adicionaVencedorPartida(this.vezDe === 'X' ? this.id_jogador1 : this.id_jogador2)
         setTimeout(() => {
           this.reiniciar()
         }, 3000)

@@ -28,6 +28,7 @@ export default {
     jogarPartida (pos) {
       this.$emit('jogar', pos)
     }
+
   }
 }
 </script>

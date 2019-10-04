@@ -1,7 +1,7 @@
 <template>
     <div class="container justify-center items-center col-11">
         <q-table
-            title="Ranking"
+            title="Ranking teste"
             :data="tableData"
             :columns="columns"
             row-key="name"
